@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>에비드넷 조직도</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+:root{
+  --bg:#f0ede8;--sur:#fff;--bdr:#dedad4;--bdr2:#c4c0b8;
+  --txt:#1c1b18;--mut:#706e68;--lt:#a8a49e;
+  --acc:#1b4380;--acc2:#e8edf8;
+  --sh:0 2px 10px rgba(0,0,0,.08);--sh2:0 8px 28px rgba(0,0,0,.18);
+  --r:10px;--grid:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;height:100vh;width:100vw}
+
+/* TOPBAR */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;
+  background:var(--sur);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:8px;padding:0 16px}
+#topbar h1{font-size:14px;font-weight:700;white-space:nowrap}
+.sep{width:1px;height:18px;background:var(--bdr);flex-shrink:0}
+.btn{font-family:inherit;font-size:12px;font-weight:500;padding:5px 12px;
+  border-radius:7px;cursor:pointer;border:1px solid var(--bdr2);
+  background:var(--sur);color:var(--txt);white-space:nowrap;transition:background .12s}
+.btn:hover{background:var(--bg)}
+.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.btn.pri:hover{background:#163472}
+.btn.grn{background:#2a6128;color:#fff;border-color:#2a6128}
+.btn.grn:hover{background:#1d4a1c}
+.btn.red{background:#b02828;color:#fff;border-color:#b02828}
+.btn.red:hover{background:#891f1f}
+#stat-bar{display:flex;gap:6px;flex:1;align-items:center;overflow:hidden}
+.chip{font-size:11px;background:var(--bg);border-radius:20px;padding:2px 9px;color:var(--mut);white-space:nowrap}
+.chip b{color:var(--txt);font-weight:600}
+#mode-tag{font-size:11px;color:var(--mut);padding:3px 8px;background:var(--bg);border-radius:6px;white-space:nowrap}
+#sync-status{font-size:11px;padding:3px 10px;border-radius:6px;white-space:nowrap;font-weight:500}
+#sync-status.ok{background:#e2f5ee;color:#0a4d36}
+#sync-status.saving{background:#fdf0e0;color:#6b3a10}
+#sync-status.err{background:#fce8ec;color:#7a1f30}
+#sync-status.local{background:#f0efec;color:#3a3830}
+.tbr{display:flex;gap:6px;margin-left:auto;align-items:center;flex-shrink:0}
+
+/* CANVAS */
+#wrap{position:fixed;top:52px;left:0;right:0;bottom:0;overflow:hidden;background:var(--bg)}
+#wrap::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,#c8c4bc 1px,transparent 1px);
+  background-size:var(--grid) var(--grid);
+  background-position:var(--grid-ox,0px) var(--grid-oy,0px)}
+#canvas{position:absolute;transform-origin:0 0;width:6000px;height:4000px;z-index:1}
+#svg-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2}
+
+/* NODES */
+.node{position:absolute;z-index:10;background:var(--sur);border:1px solid var(--bdr);
+  border-radius:var(--r);box-shadow:var(--sh);min-width:155px;max-width:195px;
+  user-select:none;transition:box-shadow .12s,border-color .12s}
+.node:hover{border-color:var(--bdr2);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.node.sel{border:2px solid var(--acc);box-shadow:0 0 0 3px rgba(27,67,128,.12)}
+.node.cm{cursor:crosshair}
+.node.cm:hover{border:2px solid #2a6128;box-shadow:0 0 0 3px rgba(42,97,40,.15)}
+.node.cf{border:2px solid #2a6128;box-shadow:0 0 0 3px rgba(42,97,40,.2)}
+
+.exec-box{padding:10px 14px 11px;border-radius:var(--r);cursor:grab}
+.exec-box:active{cursor:grabbing}
+.exec-top{display:flex;align-items:flex-start}
+.et{font-size:13px;font-weight:700;line-height:1.3}
+.es{font-size:10px;margin-top:2px;opacity:.65}
+
+.node-head{padding:8px 10px 7px;border-radius:var(--r) var(--r) 0 0;
+  display:flex;align-items:center;gap:5px}
+.nl{font-size:12px;font-weight:700;line-height:1.3}
+.ns{font-size:10px;opacity:.6;margin-top:1px}
+.mcnt{font-size:10px;font-weight:400;opacity:.65}
+.nacts{display:flex;gap:2px;opacity:0;transition:opacity .15s;flex-shrink:0}
+.node:hover .nacts{opacity:1}
+.exec-box .nacts{opacity:0}
+.node:hover .exec-box .nacts{opacity:1}
+.nab{font-size:11px;padding:2px 5px;border-radius:4px;cursor:pointer;border:none;background:transparent;color:inherit}
+.nab:hover{background:rgba(0,0,0,.1)}
+.node-body{padding:2px 0 4px}
+.mrow{display:flex;align-items:center;padding:3px 10px;font-size:11px;cursor:pointer;transition:background .1s;gap:4px}
+.mrow:hover{background:var(--bg)}
+.mn{flex:1}
+.m-rank-inline{font-size:9px;color:var(--mut);margin-left:2px;opacity:.8}
+.mr{font-size:10px;color:var(--mut);white-space:nowrap}
+.addm{width:100%;text-align:center;font-size:11px;color:var(--lt);
+  padding:4px 0;cursor:pointer;border-top:1px solid var(--bdr);
+  border-radius:0 0 var(--r) var(--r);transition:color .12s,background .12s}
+.addm:hover{color:var(--acc);background:var(--acc2)}
+
+/* colors */
+.c0 .node-head,.c0 .exec-box{background:#e8f0fb;color:#1a3d7a}
+.c1 .node-head,.c1 .exec-box{background:#e2f5ee;color:#0a4d36}
+.c2 .node-head,.c2 .exec-box{background:#fdf0e0;color:#6b3a10}
+.c3 .node-head,.c3 .exec-box{background:#fce8ec;color:#7a1f30}
+.c4 .node-head,.c4 .exec-box{background:#eef4e2;color:#2d5b0e}
+.c5 .node-head,.c5 .exec-box{background:#eeecfd;color:#3a2c8a}
+.c6 .node-head,.c6 .exec-box{background:#fdeee8;color:#7a3018}
+.c7 .node-head,.c7 .exec-box{background:#f0efec;color:#3a3830}
+.c8 .node-head,.c8 .exec-box{background:#1c1b18;color:#fff}
+
+/* HINT */
+#hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);
+  background:#2a6128;color:#fff;font-size:12px;font-weight:500;
+  padding:8px 20px;border-radius:20px;z-index:400;box-shadow:var(--sh2);
+  pointer-events:none;display:none;white-space:nowrap}
+
+/* ZOOM */
+#zbar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:250;
+  display:flex;gap:4px;align-items:center;background:var(--sur);
+  border:1px solid var(--bdr);border-radius:20px;padding:4px 8px;box-shadow:var(--sh)}
+#zbar button{font-size:14px;width:26px;height:26px;border:none;background:transparent;cursor:pointer;border-radius:6px;color:var(--txt)}
+#zbar button:hover{background:var(--bg)}
+#zlbl{font-size:11px;color:var(--mut);min-width:38px;text-align:center}
+
+/* MINIMAP */
+#mmap{position:fixed;bottom:16px;right:16px;z-index:250;width:160px;height:110px;
+  background:rgba(255,255,255,.92);border:1px solid var(--bdr);border-radius:8px;
+  overflow:hidden;box-shadow:var(--sh)}
+#mmc{width:100%;height:100%}
+
+/* MODAL */
+#mbg{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.38);
+  display:none;align-items:center;justify-content:center}
+#mbg.open{display:flex}
+#mbox{background:var(--sur);border-radius:14px;padding:24px;width:340px;
+  max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+#mbox h3{font-size:15px;font-weight:700;margin-bottom:18px}
+.field{margin-bottom:13px}
+.field label{font-size:12px;color:var(--mut);display:block;margin-bottom:5px;font-weight:500}
+.field input,.field select{width:100%;font-family:inherit;font-size:13px;
+  padding:7px 10px;border:1px solid var(--bdr2);border-radius:7px;
+  background:var(--bg);color:var(--txt);outline:none}
+.field input:focus,.field select:focus{border-color:var(--acc);background:#fff}
+.frow{display:flex;gap:8px}.frow .field{flex:1}
+.mbtns{display:flex;gap:8px;margin-top:18px}
+.mbtns .btn{flex:1;text-align:center;padding:8px}
+
+/* CTX */
+#ctx{position:fixed;z-index:500;background:var(--sur);border:1px solid var(--bdr);
+  border-radius:9px;box-shadow:var(--sh2);padding:6px;min-width:150px;display:none}
+#ctx.open{display:block}
+.ci{padding:7px 12px;font-size:12px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.ci:hover{background:var(--bg)}
+.ci.red{color:#b02828}
+.cisep{height:1px;background:var(--bdr);margin:4px 0}
+
+/* FIREBASE SETUP BANNER */
+#fb-banner{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center}
+#fb-box{background:var(--sur);border-radius:16px;padding:32px;width:500px;max-width:95vw;
+  box-shadow:0 24px 64px rgba(0,0,0,.28)}
+#fb-box h2{font-size:17px;font-weight:700;margin-bottom:8px}
+#fb-box p{font-size:13px;color:var(--mut);line-height:1.7;margin-bottom:20px}
+#fb-box textarea{width:100%;height:160px;font-family:'Courier New',monospace;font-size:12px;
+  padding:10px;border:1px solid var(--bdr2);border-radius:8px;resize:none;
+  background:#f8f7f5;color:var(--txt);outline:none}
+#fb-box textarea:focus{border-color:var(--acc)}
+.fb-btns{display:flex;gap:8px;margin-top:16px}
+.fb-btns .btn{flex:1;padding:10px;text-align:center;font-size:13px}
+#fb-skip-note{font-size:11px;color:var(--lt);margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- Firebase setup banner -->
+<div id="fb-banner">
+  <div id="fb-box">
+    <h2>🔥 Firebase 연결 설정</h2>
+    <p>Firebase Console에서 복사한 <b>firebaseConfig</b> 값을 붙여넣으세요.<br>
+    설정하면 모든 직원이 실시간으로 같은 조직도를 보고 수정할 수 있습니다.</p>
+    <textarea id="fb-config-input" placeholder='const firebaseConfig = {
+  apiKey: "AIza...",
+  authDomain: "....firebaseapp.com",
+  databaseURL: "https://...-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "...",
+  storageBucket: "....appspot.com",
+  messagingSenderId: "...",
+  appId: "..."
+};'></textarea>
+    <div class="fb-btns">
+      <button class="btn" onclick="skipFirebase()">로컬 모드로 시작</button>
+      <button class="btn pri" onclick="connectFirebase()">🔥 Firebase 연결</button>
+    </div>
+    <div id="fb-skip-note">로컬 모드: 내 브라우저에서만 수정됩니다. 나중에 우상단 🔥 버튼으로 다시 연결 가능.</div>
+  </div>
+</div>
+
+<div id="topbar">
+  <h1>에비드넷 조직도</h1>
+  <div class="sep"></div>
+  <div id="stat-bar"></div>
+  <div class="tbr">
+    <span id="sync-status" class="local">● 로컬</span>
+    <span id="mode-tag">일반 모드</span>
+    <button class="btn" onclick="addNode('exec')">+ 임원</button>
+    <button class="btn" onclick="addNode('team')">+ 팀</button>
+    <button class="btn grn" id="cbtn" onclick="toggleConn()">🔗 연결</button>
+    <button class="btn" onclick="autoLayout()">⬛ 자동정렬</button>
+    <div class="sep"></div>
+    <button class="btn" onclick="document.getElementById('fb-banner').style.display='flex'" title="Firebase 재연결">🔥</button>
+    <button class="btn" onclick="printOrg()">🖨 인쇄</button>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="canvas"><svg id="svg-layer"></svg></div>
+</div>
+
+<div id="hint">🔗 하위 노드를 클릭하세요 — ESC 취소</div>
+
+<div id="zbar">
+  <button onclick="doZoom(-0.1)">−</button>
+  <span id="zlbl">100%</span>
+  <button onclick="doZoom(0.1)">+</button>
+  <button onclick="fitView()" style="font-size:11px;width:auto;padding:0 7px">맞춤</button>
+</div>
+<div id="mmap"><canvas id="mmc"></canvas></div>
+
+<div id="mbg">
+  <div id="mbox">
+    <h3 id="mtitle"></h3>
+    <div id="mbody"></div>
+    <div class="mbtns" id="mbtns"></div>
+  </div>
+</div>
+<div id="ctx"></div>
+
+<script type="module">
+/* ═══════════════════════════════════════
+   FIREBASE DYNAMIC IMPORT
+═══════════════════════════════════════ */
+let db = null;
+let fbRef = null;
+let isFirebase = false;
+let saveTimeout = null;
+
+window.connectFirebase = async function() {
+  const raw = document.getElementById('fb-config-input').value.trim();
+  if (!raw) return alert('설정값을 붙여넣어 주세요');
+
+  // parse firebaseConfig object from pasted text
+  let cfg;
+  try {
+    // extract the object literal
+    const objStr = raw.replace(/^.*?=\s*/, '').replace(/;?\s*$/, '');
+    cfg = new Function('return ' + objStr)();
+  } catch(e) {
+    alert('설정값 형식이 올바르지 않습니다.\nfirebaseConfig = { ... } 부분을 전체 복사해주세요.');
+    return;
+  }
+
+  if (!cfg.databaseURL) {
+    alert('databaseURL이 없습니다.\nRealtime Database를 먼저 생성해주세요.');
+    return;
+  }
+
+  try {
+    setSyncStatus('saving', '연결 중...');
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+
+    const app = initializeApp(cfg);
+    db = getDatabase(app);
+    fbRef = ref(db, 'orgchart');
+    isFirebase = true;
+
+    // save config to localStorage
+    localStorage.setItem('fb_config', JSON.stringify(cfg));
+
+    // listen for realtime updates
+    onValue(fbRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // only update if different from current (avoid re-render on own save)
+        const incoming = JSON.stringify(data);
+        const current  = JSON.stringify(S);
+        if (incoming !== current) {
+          S = data;
+          nid = Math.max(...S.nodes.map(n => n.id)) + 1;
+          render();
+        }
+      } else {
+        // no data yet — push current state
+        pushToFirebase();
+      }
+      setSyncStatus('ok', '● 실시간 동기화 중');
+    }, (error) => {
+      setSyncStatus('err', '● 연결 오류');
+      console.error(error);
+    });
+
+    window._fbSet = set;
+    window._fbRef = fbRef;
+
+    document.getElementById('fb-banner').style.display = 'none';
+    setSyncStatus('ok', '● 실시간 동기화 중');
+
+  } catch(e) {
+    setSyncStatus('err', '● 연결 실패');
+    alert('Firebase 연결 실패: ' + e.message);
+    console.error(e);
+  }
+};
+
+window.skipFirebase = function() {
+  document.getElementById('fb-banner').style.display = 'none';
+  setSyncStatus('local', '● 로컬 모드');
+};
+
+// Auto-reconnect from localStorage
+window.addEventListener('load', async () => {
+  const saved = localStorage.getItem('fb_config');
+  if (saved) {
+    try {
+      document.getElementById('fb-config-input').value =
+        'const firebaseConfig = ' + saved;
+      await window.connectFirebase();
+    } catch(e) {
+      console.warn('Auto-reconnect failed', e);
+      document.getElementById('fb-banner').style.display = 'flex';
+    }
+  }
+  render();
+  setTimeout(fitView, 200);
+});
+
+function pushToFirebase() {
+  if (!isFirebase || !window._fbSet || !window._fbRef) return;
+  setSyncStatus('saving', '● 저장 중...');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    window._fbSet(window._fbRef, JSON.parse(JSON.stringify(S)))
+      .then(() => setSyncStatus('ok', '● 실시간 동기화 중'))
+      .catch(e => { setSyncStatus('err', '● 저장 실패'); console.error(e); });
+  }, 600); // debounce 600ms
+}
+
+function setSyncStatus(cls, text) {
+  const el = document.getElementById('sync-status');
+  el.className = 'sync-status ' + cls;
+  el.id = 'sync-status';
+  el.textContent = text;
+}
+
+// expose pushToFirebase globally so save() calls work
+window._push = pushToFirebase;
+
+/* ═══════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════ */
+const GRID = 20;
+const RANKS = ['부회장','회장','사장','부사장','전무','상무','이사','부장','차장','과장','팀장','리더','파트장','프로','사원','인턴'];
+const POSITIONS = ['','본부장','그룹장','팀장','파트장','팀원'];
+const CNAMES = ['파랑','초록','주황','분홍','연두','보라','산호','회색','검정'];
+const NC = 9;
+const HC = ['#e8f0fb','#e2f5ee','#fdf0e0','#fce8ec','#eef4e2','#eeecfd','#fdeee8','#f0efec','#1c1b18'];
+const TC = ['#1a3d7a','#0a4d36','#6b3a10','#7a1f30','#2d5b0e','#3a2c8a','#7a3018','#3a3830','#fff'];
+const snap = v => Math.round(v / GRID) * GRID;
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let S = {
+  nodes: [
+    {id:1,  type:'exec', label:'부회장',          sub:'',              color:8, x:800,  y:60},
+    {id:2,  type:'exec', label:'조인산 대표이사',   sub:'',              color:0, x:800,  y:200},
+    {id:3,  type:'exec', label:'전승 대표이사',     sub:'',              color:0, x:1400, y:200},
+    {id:4,  type:'exec', label:'김일호 이사',       sub:'CFO',           color:7, x:80,   y:360},
+    {id:5,  type:'exec', label:'여정민 이사',       sub:'CSO',           color:7, x:300,  y:360},
+    {id:6,  type:'exec', label:'환경석 상무',       sub:'CPO',           color:7, x:520,  y:360},
+    {id:7,  type:'exec', label:'윤종성 이사',       sub:'RWE사업부',      color:7, x:740,  y:360},
+    {id:8,  type:'exec', label:'이완희 상무',       sub:'CTO/CISO',      color:5, x:1220, y:360},
+    {id:9,  type:'team', label:'경영지원팀',        sub:'',    color:7, x:80,   y:520, members:[{name:'원대연',rank:'프로',pos:'팀원'},{name:'최회원',rank:'프로',pos:'팀원'},{name:'김수빈',rank:'프로',pos:'팀원'}]},
+    {id:10, type:'team', label:'Offering Dev팀',   sub:'',    color:2, x:300,  y:520, members:[{name:'박송천',rank:'리더',pos:'팀장'},{name:'오승희',rank:'프로',pos:'팀원'},{name:'최원영',rank:'프로',pos:'팀원'},{name:'장윤주',rank:'프로',pos:'팀원'}]},
+    {id:11, type:'team', label:'RWE Consulting팀', sub:'',    color:3, x:520,  y:520, members:[{name:'김영주',rank:'리더',pos:'팀장'},{name:'최에지',rank:'프로',pos:'팀원'},{name:'이민택',rank:'프로',pos:'팀원'}]},
+    {id:12, type:'team', label:'Public Business팀',sub:'',    color:6, x:740,  y:520, members:[{name:'홍윤기',rank:'이사대우',pos:'팀장'},{name:'박샛별',rank:'프로',pos:'팀원'}]},
+    {id:13, type:'team', label:'RWE Analytics팀',  sub:'',    color:6, x:960,  y:520, members:[{name:'유길후',rank:'리더',pos:'팀장'}]},
+    {id:14, type:'team', label:'PMR팀',             sub:'',    color:6, x:1160, y:520, members:[{name:'임평규',rank:'리더',pos:'팀장'}]},
+    {id:15, type:'team', label:'데이터사이언스팀',   sub:'DSG', color:1, x:1400, y:520, members:[{name:'임유리',rank:'리더',pos:'팀장'},{name:'강혜진',rank:'파트장',pos:'파트장'},{name:'윤채연',rank:'프로',pos:'팀원'},{name:'김진',rank:'프로',pos:'팀원'},{name:'박효진',rank:'프로',pos:'팀원'},{name:'원효준',rank:'파트장',pos:'파트장'},{name:'문혜성',rank:'프로',pos:'팀원'},{name:'문슬지',rank:'프로',pos:'팀원'},{name:'임경민',rank:'프로',pos:'팀원'}]},
+    {id:16, type:'team', label:'헬스케어콘텐츠팀',  sub:'HCG', color:4, x:1600, y:520, members:[{name:'이산',rank:'리더',pos:'팀장'},{name:'김효정',rank:'프로',pos:'팀원'},{name:'윤선영',rank:'프로',pos:'팀원'},{name:'어소영',rank:'프로',pos:'팀원'},{name:'한재희',rank:'프로',pos:'팀원'},{name:'김은성',rank:'프로',pos:'팀원'},{name:'이전영',rank:'프로',pos:'팀원'},{name:'김희주',rank:'프로',pos:'팀원'}]},
+    {id:17, type:'team', label:'데이터운영팀',      sub:'Data Technology Group', color:2, x:1820, y:520, members:[{name:'김율호',rank:'리더',pos:'팀장'},{name:'한승수',rank:'프로',pos:'팀원'},{name:'김수민',rank:'프로',pos:'팀원'},{name:'김삼백',rank:'프로',pos:'팀원'},{name:'신균재',rank:'프로',pos:'팀원'}]},
+    {id:18, type:'team', label:'데이터질관리팀',    sub:'Data Technology Group', color:2, x:2040, y:520, members:[{name:'방성현',rank:'리더',pos:'팀장'},{name:'신현지',rank:'프로',pos:'팀원'},{name:'장보민',rank:'프로',pos:'팀원'},{name:'원준연',rank:'프로',pos:'팀원'},{name:'정충희',rank:'프로',pos:'팀원'}]},
+    {id:19, type:'team', label:'Medical AI팀',      sub:'Data Technology Group', color:5, x:2260, y:520, members:[{name:'임은영',rank:'리더',pos:'팀장'},{name:'전지훈',rank:'프로',pos:'팀원'},{name:'조현래',rank:'프로',pos:'팀원'},{name:'아주형',rank:'프로',pos:'팀원'},{name:'김지효',rank:'프로',pos:'팀원'},{name:'조경철',rank:'프로',pos:'팀원'}]},
+    {id:20, type:'team', label:'개발팀',            sub:'PSG', color:1, x:2480, y:520, members:[{name:'이창덕',rank:'프로',pos:'팀원'},{name:'이성일',rank:'프로',pos:'팀원'},{name:'손한결',rank:'프로',pos:'팀원'},{name:'관성연',rank:'프로',pos:'팀원'},{name:'정효성',rank:'프로',pos:'팀원'}]},
+    {id:21, type:'team', label:'데브옵스팀',        sub:'PSG', color:1, x:2700, y:520, members:[{name:'전재영',rank:'리더',pos:'팀장'},{name:'양은경',rank:'프로',pos:'팀원'},{name:'유희진',rank:'프로',pos:'팀원'}]},
+    {id:22, type:'team', label:'CTO Staff',         sub:'',    color:5, x:2920, y:520, members:[{name:'이준서',rank:'리더',pos:'팀장'}]},
+    {id:23, type:'team', label:'인프라팀',           sub:'',    color:5, x:3100, y:520, members:[{name:'차동준',rank:'리더',pos:'팀장'}]},
+  ],
+  edges:[
+    [1,2],[1,3],
+    [2,4],[2,5],[2,6],[2,7],[2,12],[2,13],[2,14],
+    [3,8],
+    [4,9],[5,10],[6,10],[7,11],
+    [8,15],[8,16],[8,17],[8,18],[8,19],[8,20],[8,21],[8,22],[8,23],
+  ]
+};
+
+let nid = 60;
+let sc = 0.38, px = 0, py = 0;
+let connMode = false, connFrom = null;
+let dragN = null, dox = 0, doy = 0;
+let panning = false, psx = 0, psy = 0, ppx = 0, ppy = 0;
+let ctxT = null;
+
+/* ═══════════════════════════════════════
+   SAVE (debounced)
+═══════════════════════════════════════ */
+function save() {
+  window._push && window._push();
+}
+
+/* ═══════════════════════════════════════
+   RENDER
+═══════════════════════════════════════ */
+function render() {
+  document.querySelectorAll('.node').forEach(e => e.remove());
+  S.nodes.forEach(n => document.getElementById('canvas').appendChild(mkNode(n)));
+  drawEdges();
+  updateStats();
+  applyT();
+  drawMinimap();
+}
+
+function mkNode(n) {
+  const d = document.createElement('div');
+  d.className = `node c${n.color % NC}`;
+  d.id = 'n' + n.id;
+  d.style.left = n.x + 'px';
+  d.style.top  = n.y + 'px';
+
+  if (n.type === 'exec') {
+    const box = document.createElement('div');
+    box.className = 'exec-box';
+
+    const inner = document.createElement('div');
+    inner.className = 'exec-top';
+
+    const txt = document.createElement('div');
+    txt.style.flex = '1';
+    txt.innerHTML = `<div class="et">${n.label}</div>${n.sub ? `<div class="es">${n.sub}</div>` : ''}`;
+
+    const acts = document.createElement('span');
+    acts.className = 'nacts';
+    acts.style.cssText = 'flex-shrink:0;margin-left:6px';
+
+    const bEdit = document.createElement('button');
+    bEdit.className = 'nab'; bEdit.title = '편집'; bEdit.textContent = '⚙';
+    bEdit.addEventListener('mousedown', e => e.stopPropagation());
+    bEdit.addEventListener('click', e => { e.stopPropagation(); openEdit(n.id); });
+
+    const bDel = document.createElement('button');
+    bDel.className = 'nab'; bDel.title = '삭제'; bDel.textContent = '✕';
+    bDel.style.color = '#b02828';
+    bDel.addEventListener('mousedown', e => e.stopPropagation());
+    bDel.addEventListener('click', e => { e.stopPropagation(); deleteNode(n.id); });
+
+    acts.appendChild(bEdit); acts.appendChild(bDel);
+    inner.appendChild(txt); inner.appendChild(acts);
+    box.appendChild(inner);
+    d.appendChild(box);
+    txt.addEventListener('mousedown', e => startDrag(e, n));
+
+  } else {
+    const head = document.createElement('div');
+    head.className = 'node-head';
+
+    const htxt = document.createElement('div');
+    htxt.style.flex = '1';
+    const cnt = (n.members || []).length;
+    htxt.innerHTML = `<div class="nl">${n.label} <span class="mcnt">(${cnt}명)</span></div>${n.sub ? `<div class="ns">${n.sub}</div>` : ''}`;
+
+    const hacts = document.createElement('span');
+    hacts.className = 'nacts';
+
+    const hEdit = document.createElement('button');
+    hEdit.className = 'nab'; hEdit.title = '편집'; hEdit.textContent = '⚙';
+    hEdit.addEventListener('mousedown', e => e.stopPropagation());
+    hEdit.addEventListener('click', e => { e.stopPropagation(); openEdit(n.id); });
+
+    const hDel = document.createElement('button');
+    hDel.className = 'nab'; hDel.title = '삭제'; hDel.textContent = '✕';
+    hDel.style.color = '#b02828';
+    hDel.addEventListener('mousedown', e => e.stopPropagation());
+    hDel.addEventListener('click', e => { e.stopPropagation(); deleteNode(n.id); });
+
+    hacts.appendChild(hEdit); hacts.appendChild(hDel);
+    head.appendChild(htxt); head.appendChild(hacts);
+    d.appendChild(head);
+    htxt.addEventListener('mousedown', e => startDrag(e, n));
+
+    const body = document.createElement('div');
+    body.className = 'node-body';
+    (n.members || []).forEach((m, i) => {
+      const r = document.createElement('div');
+      r.className = 'mrow';
+      r.innerHTML = `<span class="mn">${m.name}<span class="m-rank-inline"> ${m.rank}</span></span><span class="mr">${m.pos || ''}</span>`;
+      r.ondblclick = e => { e.stopPropagation(); openEditMember(n.id, i); };
+      r.oncontextmenu = e => { e.preventDefault(); showCtx(e, {t:'member', nid:n.id, idx:i}); };
+      body.appendChild(r);
+    });
+    const ab = document.createElement('div');
+    ab.className = 'addm'; ab.textContent = '+ 직원 추가';
+    ab.addEventListener('mousedown', e => e.stopPropagation());
+    ab.addEventListener('click', e => { e.stopPropagation(); openAddMember(n.id); });
+    body.appendChild(ab);
+    d.appendChild(body);
+  }
+
+  d.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e, {t:'node', nid:n.id}); });
+  d.addEventListener('click', e => { if (connMode) handleConn(n.id, e); });
+  if (connMode) d.classList.add('cm');
+  return d;
+}
+
+/* ═══════════════════════════════════════
+   SMART CONNECTORS
+═══════════════════════════════════════ */
+function drawEdges() {
+  const svg = document.getElementById('svg-layer');
+  svg.innerHTML = `<defs>
+    <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M1,1 L7,4 L1,7" fill="none" stroke="#b0ab9e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker></defs>`;
+
+  S.edges.forEach(([a, b]) => {
+    const na = S.nodes.find(n => n.id === a);
+    const nb = S.nodes.find(n => n.id === b);
+    if (!na || !nb) return;
+    const ea = document.getElementById('n' + a);
+    const eb = document.getElementById('n' + b);
+    if (!ea || !eb) return;
+
+    const aw = ea.offsetWidth  || 160, ah = ea.offsetHeight || 50;
+    const bw = eb.offsetWidth  || 160;
+    const ax = na.x + aw / 2, ay = na.y + ah;
+    const bx = nb.x + bw / 2, by = nb.y;
+
+    // 수직 1자: 두 노드의 left x가 같거나 중심 X가 30px 이내
+    const sameCol = (na.x === nb.x) || Math.abs(ax - bx) < 30;
+    let d;
+    if (sameCol) {
+      d = `M ${ax} ${ay} L ${ax} ${by}`;
+    } else {
+      const my = ay + Math.round((by - ay) / 2);
+      d = `M ${ax} ${ay} L ${ax} ${my} L ${bx} ${my} L ${bx} ${by}`;
+    }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#b0ab9e');
+    path.setAttribute('stroke-width', '1.4');
+    path.setAttribute('stroke-linejoin', 'miter');
+    path.setAttribute('marker-end', 'url(#arr)');
+    path.style.pointerEvents = 'stroke';
+    path.style.cursor = 'pointer';
+    path.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e, {t:'edge', a, b}); });
+    svg.appendChild(path);
+  });
+}
+
+/* ═══════════════════════════════════════
+   DRAG
+═══════════════════════════════════════ */
+function startDrag(e, n) {
+  if (connMode || e.button !== 0) return;
+  e.preventDefault(); e.stopPropagation();
+  dragN = n;
+  dox = e.clientX / sc - px / sc - n.x;
+  doy = e.clientY / sc - py / sc - n.y;
+}
+
+window.addEventListener('mousemove', e => {
+  if (dragN) {
+    dragN.x = Math.max(0, snap(e.clientX / sc - px / sc - dox));
+    dragN.y = Math.max(0, snap(e.clientY / sc - py / sc - doy));
+    const el = document.getElementById('n' + dragN.id);
+    if (el) { el.style.left = dragN.x + 'px'; el.style.top = dragN.y + 'px'; }
+    drawEdges(); drawMinimap();
+    return;
+  }
+  if (panning) {
+    px = ppx + (e.clientX - psx);
+    py = ppy + (e.clientY - psy);
+    applyT(); drawMinimap();
+  }
+});
+window.addEventListener('mouseup', () => {
+  if (dragN) { save(); dragN = null; }
+  panning = false;
+});
+
+/* ═══════════════════════════════════════
+   PAN + ZOOM
+═══════════════════════════════════════ */
+const wrap = document.getElementById('wrap');
+wrap.addEventListener('mousedown', e => {
+  if (e.button === 1 || e.target === wrap ||
+      e.target.id === 'canvas' || e.target.id === 'svg-layer') {
+    panning = true; psx = e.clientX; psy = e.clientY; ppx = px; ppy = py;
+    e.preventDefault();
+  }
+});
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.07 : 0.07;
+  const r = wrap.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const old = sc;
+  sc = Math.min(2, Math.max(0.12, sc + delta));
+  px = mx - (mx - px) * (sc / old);
+  py = my - (my - py) * (sc / old);
+  applyT(); drawMinimap();
+}, { passive: false });
+
+function applyT() {
+  document.getElementById('canvas').style.transform = `translate(${px}px,${py}px) scale(${sc})`;
+  document.getElementById('zlbl').textContent = Math.round(sc * 100) + '%';
+  const gx = ((px % (GRID * sc)) + GRID * sc) % (GRID * sc);
+  const gy = ((py % (GRID * sc)) + GRID * sc) % (GRID * sc);
+  wrap.style.setProperty('--grid-ox', gx + 'px');
+  wrap.style.setProperty('--grid-oy', gy + 'px');
+  wrap.style.setProperty('--grid', (GRID * sc) + 'px');
+}
+function doZoom(d) {
+  const r = wrap.getBoundingClientRect(), cx = r.width / 2, cy = r.height / 2;
+  const old = sc; sc = Math.min(2, Math.max(0.12, sc + d));
+  px = cx - (cx - px) * (sc / old); py = cy - (cy - py) * (sc / old);
+  applyT(); drawMinimap();
+}
+function fitView() {
+  if (!S.nodes.length) return;
+  const pad = 60;
+  const xs = S.nodes.map(n => n.x), ys = S.nodes.map(n => n.y);
+  const minX = Math.min(...xs) - pad, minY = Math.min(...ys) - pad;
+  const maxX = Math.max(...xs) + 220,  maxY = Math.max(...ys) + 400;
+  const r = wrap.getBoundingClientRect();
+  sc = Math.min(r.width / (maxX - minX), r.height / (maxY - minY), 1) * 0.9;
+  px = -minX * sc + (r.width - (maxX - minX) * sc) / 2;
+  py = -minY * sc + 20;
+  applyT(); drawMinimap();
+}
+
+/* ═══════════════════════════════════════
+   CONNECT MODE
+═══════════════════════════════════════ */
+function toggleConn() {
+  connMode = !connMode; connFrom = null;
+  document.querySelectorAll('.node').forEach(el => { el.style.outline = ''; el.classList.toggle('cm', connMode); });
+  document.getElementById('hint').style.display = connMode ? 'block' : 'none';
+  document.getElementById('cbtn').textContent = connMode ? '✕ 취소' : '🔗 연결';
+  document.getElementById('cbtn').className = 'btn ' + (connMode ? 'red' : 'grn');
+  document.getElementById('mode-tag').textContent = connMode ? '🔗 상위→하위 순서로 클릭' : '일반 모드';
+}
+function handleConn(id, e) {
+  e.stopPropagation();
+  if (!connFrom) {
+    connFrom = id;
+    document.getElementById('n' + id).classList.add('cf');
+    document.getElementById('hint').textContent = `✅ "${S.nodes.find(n => n.id === id)?.label}" 선택 → 하위 클릭`;
+  } else {
+    if (connFrom === id) { document.getElementById('n' + id).classList.remove('cf'); connFrom = null; return; }
+    if (!S.edges.some(([a, b]) => a === connFrom && b === id)) S.edges.push([connFrom, id]);
+    document.querySelectorAll('.node').forEach(el => el.classList.remove('cf'));
+    connFrom = null;
+    document.getElementById('hint').textContent = '🔗 하위 노드를 클릭하세요 — ESC 취소';
+    drawEdges(); save();
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (connMode) toggleConn(); closeModal(); document.getElementById('ctx').classList.remove('open'); }
+});
+
+/* ═══════════════════════════════════════
+   DELETE
+═══════════════════════════════════════ */
+function deleteNode(id) {
+  const n = S.nodes.find(x => x.id === id);
+  if (!n) return;
+  openModal('삭제 확인',
+    `<p style="font-size:13px;line-height:1.7"><b>"${n.label}"</b>을(를) 삭제하시겠습니까?<br><span style="font-size:11px;color:var(--mut)">연결선도 함께 제거됩니다.</span></p>`,
+    [{l:'취소', c:'', f:'closeModal()'}, {l:'삭제', c:'red', f:`_doDelNode(${id})`}]);
+}
+window._doDelNode = function(id) {
+  S.nodes = S.nodes.filter(x => x.id !== id);
+  S.edges = S.edges.filter(([a, b]) => a !== id && b !== id);
+  closeModal(); render(); save();
+};
+function deleteMember(nid, idx) {
+  const m = S.nodes.find(x => x.id === nid)?.members[idx];
+  openModal('직원 삭제',
+    `<p style="font-size:13px;line-height:1.7"><b>"${m?.name}"</b>을(를) 삭제하시겠습니까?</p>`,
+    [{l:'취소', c:'', f:'closeModal()'}, {l:'삭제', c:'red', f:`_doDelM(${nid},${idx})`}]);
+}
+window._doDelM = function(nid, idx) {
+  S.nodes.find(n => n.id === nid)?.members.splice(idx, 1);
+  closeModal(); render(); save();
+};
+
+/* ═══════════════════════════════════════
+   CONTEXT MENU
+═══════════════════════════════════════ */
+function showCtx(e, t) {
+  ctxT = t;
+  const ctx = document.getElementById('ctx');
+  let h = '';
+  if (t.t === 'node') {
+    h = `<div class="ci" onclick="ctxAct('edit')">✏️ 편집</div>
+         <div class="ci" onclick="ctxAct('conn')">🔗 연결 시작</div>
+         <div class="cisep"></div>
+         <div class="ci red" onclick="ctxAct('del')">🗑 삭제</div>`;
+  } else if (t.t === 'member') {
+    h = `<div class="ci" onclick="ctxAct('edit')">✏️ 직원 편집</div>
+         <div class="ci red" onclick="ctxAct('del')">🗑 직원 삭제</div>`;
+  } else if (t.t === 'edge') {
+    const la = S.nodes.find(n => n.id === t.a)?.label || '';
+    const lb = S.nodes.find(n => n.id === t.b)?.label || '';
+    h = `<div class="ci" style="color:var(--mut);font-size:11px;pointer-events:none">${la} → ${lb}</div>
+         <div class="cisep"></div>
+         <div class="ci red" onclick="ctxAct('del')">✂️ 연결 끊기</div>`;
+  }
+  ctx.innerHTML = h; ctx.style.left = e.clientX + 'px'; ctx.style.top = e.clientY + 'px';
+  ctx.classList.add('open');
+}
+function ctxAct(a) {
+  document.getElementById('ctx').classList.remove('open');
+  if (!ctxT) return;
+  const {t, nid, idx} = ctxT;
+  if (a === 'edit') { if (t === 'node') openEdit(nid); else if (t === 'member') openEditMember(nid, idx); }
+  else if (a === 'conn') { if (!connMode) toggleConn(); handleConn(nid, {stopPropagation:()=>{}}); }
+  else if (a === 'del') {
+    if (t === 'node') deleteNode(nid);
+    else if (t === 'member') deleteMember(nid, idx);
+    else if (t === 'edge') { S.edges = S.edges.filter(([a,b]) => !(a===ctxT.a && b===ctxT.b)); drawEdges(); save(); }
+  }
+}
+document.addEventListener('click', () => document.getElementById('ctx').classList.remove('open'));
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+function openModal(title, body, btns) {
+  document.getElementById('mtitle').textContent = title;
+  document.getElementById('mbody').innerHTML = body;
+  document.getElementById('mbtns').innerHTML = btns.map(b =>
+    `<button class="btn ${b.c}" onclick="${b.f}">${b.l}</button>`).join('');
+  document.getElementById('mbg').classList.add('open');
+  setTimeout(() => document.querySelector('#mbody input')?.focus(), 80);
+}
+function closeModal() { document.getElementById('mbg').classList.remove('open'); }
+document.getElementById('mbg').addEventListener('click', e => { if (e.target === document.getElementById('mbg')) closeModal(); });
+
+/* ═══════════════════════════════════════
+   NODE CRUD
+═══════════════════════════════════════ */
+function addNode(type) {
+  openModal(type === 'exec' ? '임원 추가' : '팀 추가', `
+    <div class="field"><label>${type === 'exec' ? '직함/이름' : '팀 이름'}</label>
+      <input id="ml" placeholder="${type === 'exec' ? '예: 부사장' : '예: 기획팀'}"></div>
+    <div class="field"><label>${type === 'exec' ? '부직함' : '그룹/약자'} (선택)</label>
+      <input id="ms" placeholder="${type === 'exec' ? '예: CFO' : '예: DSG'}"></div>
+    <div class="field"><label>색상</label>
+      <select id="mc">${CNAMES.map((n,i) => `<option value="${i}">${n}</option>`).join('')}</select></div>`,
+    [{l:'취소',c:'',f:'closeModal()'},{l:'추가',c:'pri',f:`doAdd('${type}')`}]);
+}
+window.doAdd = function(type) {
+  const label = document.getElementById('ml').value.trim();
+  if (!label) return alert('이름을 입력하세요');
+  S.nodes.push({ id:nid++, type, label, sub:document.getElementById('ms').value.trim(),
+    color:+document.getElementById('mc').value,
+    x:snap(300+Math.random()*400), y:snap(200+Math.random()*200), members:[] });
+  closeModal(); render(); save();
+};
+
+function openEdit(id) {
+  const n = S.nodes.find(x => x.id === id);
+  openModal('편집', `
+    <div class="field"><label>이름/직함</label><input id="ml" value="${n.label}"></div>
+    <div class="field"><label>부직함/약자</label><input id="ms" value="${n.sub||''}"></div>
+    <div class="field"><label>색상</label>
+      <select id="mc">${CNAMES.map((nm,i) => `<option value="${i}" ${n.color===i?'selected':''}>${nm}</option>`).join('')}</select></div>`,
+    [{l:'취소',c:'',f:'closeModal()'},{l:'저장',c:'pri',f:`saveEdit(${id})`}]);
+}
+window.saveEdit = function(id) {
+  const n = S.nodes.find(x => x.id === id);
+  n.label = document.getElementById('ml').value.trim() || n.label;
+  n.sub   = document.getElementById('ms').value.trim();
+  n.color = +document.getElementById('mc').value;
+  closeModal(); render(); save();
+};
+
+/* ═══════════════════════════════════════
+   MEMBER CRUD
+═══════════════════════════════════════ */
+function openAddMember(nid) {
+  openModal('직원 추가', `
+    <div class="frow">
+      <div class="field"><label>이름</label><input id="mm" placeholder="홍길동"></div>
+      <div class="field"><label>직급</label>
+        <select id="mr">${RANKS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>직책</label>
+      <select id="mp">${POSITIONS.map(p=>`<option>${p}</option>`).join('')}</select></div>`,
+    [{l:'취소',c:'',f:'closeModal()'},{l:'추가',c:'pri',f:`doAddM(${nid})`}]);
+}
+window.doAddM = function(id) {
+  const name = document.getElementById('mm').value.trim();
+  if (!name) return alert('이름을 입력하세요');
+  const n = S.nodes.find(x => x.id === id);
+  if (!n.members) n.members = [];
+  n.members.push({ name, rank:document.getElementById('mr').value, pos:document.getElementById('mp').value });
+  closeModal(); render(); save();
+};
+
+function openEditMember(nid, idx) {
+  const m = S.nodes.find(n => n.id === nid)?.members[idx];
+  openModal('직원 편집', `
+    <div class="frow">
+      <div class="field"><label>이름</label><input id="mm" value="${m.name}"></div>
+      <div class="field"><label>직급</label>
+        <select id="mr">${RANKS.map(r=>`<option ${m.rank===r?'selected':''}>${r}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>직책</label>
+      <select id="mp">${POSITIONS.map(p=>`<option ${(m.pos||'')===p?'selected':''}>${p}</option>`).join('')}</select></div>`,
+    [{l:'삭제',c:'red',f:`deleteMember(${nid},${idx})`},{l:'취소',c:'',f:'closeModal()'},{l:'저장',c:'pri',f:`saveM(${nid},${idx})`}]);
+}
+window.saveM = function(nid, idx) {
+  const n = S.nodes.find(x => x.id === nid);
+  n.members[idx].name = document.getElementById('mm').value.trim() || n.members[idx].name;
+  n.members[idx].rank = document.getElementById('mr').value;
+  n.members[idx].pos  = document.getElementById('mp').value;
+  closeModal(); render(); save();
+};
+
+/* ═══════════════════════════════════════
+   AUTO LAYOUT
+═══════════════════════════════════════ */
+function autoLayout() {
+  if (!confirm('자동 정렬을 실행합니다. 현재 배치가 바뀝니다.')) return;
+  const levels = {};
+  const roots = S.nodes.filter(n => !S.edges.some(([,b]) => b === n.id)).map(n => n.id);
+  if (!roots.length) return;
+  roots.forEach(id => levels[id] = 0);
+  const q = [...roots];
+  while (q.length) {
+    const id = q.shift();
+    S.edges.filter(([a]) => a === id).forEach(([,b]) => { if (levels[b]===undefined){levels[b]=(levels[id]||0)+1;q.push(b);} });
+  }
+  S.nodes.forEach(n => { if (levels[n.id]===undefined) levels[n.id]=0; });
+  const byLv = {};
+  S.nodes.forEach(n => { const l=levels[n.id]; if (!byLv[l]) byLv[l]=[]; byLv[l].push(n); });
+  Object.entries(byLv).forEach(([lv, nodes]) => {
+    const totalW = (nodes.length-1)*220;
+    const startX = snap(Math.max(60, (3200-totalW)/2));
+    nodes.forEach((n,i) => { n.x=snap(startX+i*220); n.y=snap(60+lv*260); });
+  });
+  render(); save(); setTimeout(fitView, 150);
+}
+
+/* ═══════════════════════════════════════
+   STATS
+═══════════════════════════════════════ */
+function updateStats() {
+  const total = S.nodes.reduce((s,n) => s+(n.members?.length||0), 0);
+  const teams = S.nodes.filter(n => n.type==='team').length;
+  const rc = {};
+  S.nodes.forEach(n => (n.members||[]).forEach(m => { rc[m.rank]=(rc[m.rank]||0)+1; }));
+  const top = Object.entries(rc).sort((a,b) => b[1]-a[1]).slice(0,5);
+  document.getElementById('stat-bar').innerHTML =
+    `<div class="chip">팀 <b>${teams}</b></div><div class="chip">총인원 <b>${total}명</b></div>` +
+    top.map(([r,c]) => `<div class="chip">${r} <b>${c}</b></div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   MINIMAP
+═══════════════════════════════════════ */
+function drawMinimap() {
+  const c = document.getElementById('mmc'), ctx = c.getContext('2d');
+  const W=160, H=110; c.width=W; c.height=H; ctx.clearRect(0,0,W,H);
+  if (!S.nodes.length) return;
+  const xs=S.nodes.map(n=>n.x), ys=S.nodes.map(n=>n.y);
+  const mnX=Math.min(...xs), mnY=Math.min(...ys), mxX=Math.max(...xs)+220, mxY=Math.max(...ys)+300;
+  const s=Math.min(W/(mxX-mnX+1),H/(mxY-mnY+1))*.88;
+  S.edges.forEach(([a,b]) => {
+    const na=S.nodes.find(n=>n.id===a), nb=S.nodes.find(n=>n.id===b); if (!na||!nb) return;
+    const ax=(na.x-mnX)*s+4, ay=(na.y-mnY)*s+4, bx=(nb.x-mnX)*s+4, by=(nb.y-mnY)*s+4, my=(ay+by)/2;
+    ctx.beginPath();
+    if (Math.abs(ax-bx)<2) { ctx.moveTo(ax,ay); ctx.lineTo(bx,by); }
+    else { ctx.moveTo(ax,ay); ctx.lineTo(ax,my); ctx.lineTo(bx,my); ctx.lineTo(bx,by); }
+    ctx.strokeStyle='#c8c4bc'; ctx.lineWidth=.5; ctx.stroke();
+  });
+  S.nodes.forEach(n => {
+    ctx.fillStyle = n.type==='exec' ? '#1b4380' : '#6b9dd4';
+    ctx.fillRect((n.x-mnX)*s+2,(n.y-mnY)*s+2,14,7);
+  });
+  const r=wrap.getBoundingClientRect();
+  ctx.strokeStyle='#1b4380'; ctx.lineWidth=1;
+  ctx.strokeRect((-px/sc-mnX)*s+4,(-py/sc-mnY)*s+4,(r.width/sc)*s,(r.height/sc)*s);
+}
+
+/* ═══════════════════════════════════════
+   PRINT
+═══════════════════════════════════════ */
+function printOrg() {
+  const total=S.nodes.reduce((s,n)=>s+(n.members?.length||0),0);
+  const today=new Date().toLocaleDateString('ko-KR');
+  const rc={};
+  S.nodes.forEach(n=>(n.members||[]).forEach(m=>{rc[m.rank]=(rc[m.rank]||0)+1;}));
+  const rankStr=Object.entries(rc).sort((a,b)=>b[1]-a[1]).map(([r,c])=>`${r} ${c}명`).join(' · ');
+  const em={};
+  S.edges.forEach(([a,b])=>{if(!em[a])em[a]=[];em[a].push(b);});
+  const roots=S.nodes.filter(n=>!S.edges.some(([,b])=>b===n.id)).map(n=>n.id);
+  function rN(ids,depth){
+    return ids.map(id=>{
+      const n=S.nodes.find(x=>x.id===id);if(!n)return'';
+      const ci=n.color%NC, children=em[id]||[];
+      const mrows=(n.members||[]).map(m=>`<tr><td style="padding:2px 8px;font-size:10px">${m.name} <span style="color:#999;font-size:9px">${m.rank}</span></td><td style="padding:2px 8px;font-size:10px;color:#888">${m.pos||''}</td></tr>`).join('');
+      const nb=n.type==='exec'
+        ?`<div style="background:${HC[ci]};color:${TC[ci]};border-radius:8px;padding:8px 18px;text-align:center;border:1px solid #ddd;min-width:120px"><div style="font-size:12px;font-weight:700">${n.label}</div>${n.sub?`<div style="font-size:10px;opacity:.65">${n.sub}</div>`:''}</div>`
+        :`<div style="border:1px solid #ddd;border-radius:8px;min-width:130px;background:#fff"><div style="background:${HC[ci]};color:${TC[ci]};padding:6px 10px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-align:center">${n.label} <span style="opacity:.6">${(n.members||[]).length}명</span></div><table style="width:100%;border-collapse:collapse">${mrows}</table></div>`;
+      const ch=children.length?`<div style="display:flex;justify-content:center"><div style="width:1px;height:14px;background:#ccc"></div></div><div style="display:flex;gap:10px;justify-content:center;align-items:flex-start">${rN(children,depth+1)}</div>`:'';
+      return `<div style="display:flex;flex-direction:column;align-items:center;margin:0 5px">${depth>0?'<div style="width:1px;height:14px;background:#ccc"></div>':''}${nb}${ch}</div>`;
+    }).join('');
+  }
+  const win=window.open('','_blank','width=1400,height=900');
+  win.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>에비드넷 조직도</title>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+    body{font-family:'Noto Sans KR',sans-serif;padding:20px;background:#fff}
+    h2{font-size:17px;font-weight:700;margin-bottom:3px}.meta{font-size:11px;color:#888;margin-bottom:16px}
+    .org{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
+    @media print{@page{size:A3 landscape;margin:10mm}body{padding:6px}}</style></head><body>
+    <h2>에비드넷 조직도</h2><div class="meta">총원 ${total}명 | ${rankStr} | 기준일: ${today}</div>
+    <div class="org">${rN(roots,0)}</div>
+    <script>window.onload=()=>setTimeout(()=>window.print(),600)<\/script></body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════
+   EXPOSE GLOBALS (for onclick= in modal)
+═══════════════════════════════════════ */
+window.closeModal   = closeModal;
+window.openEdit     = openEdit;
+window.addNode      = addNode;
+window.autoLayout   = autoLayout;
+window.printOrg     = printOrg;
+window.toggleConn   = toggleConn;
+window.fitView      = fitView;
+window.doZoom       = doZoom;
+window.deleteNode   = deleteNode;
+window.deleteMember = deleteMember;
+window.openAddMember= openAddMember;
+window.openEditMember=openEditMember;
+window.ctxAct       = ctxAct;
+window.addEventListener('resize', drawMinimap);
+</script>
+</body>
+</html>
