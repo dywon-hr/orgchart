@@ -395,19 +395,57 @@ window.skipFirebase = function() {
   setSyncStatus('local', '● 로컬 모드');
 };
 
-// Auto-reconnect from localStorage
+// Auto-connect with hardcoded config on load
 window.addEventListener('load', async () => {
-  const saved = localStorage.getItem('fb_config');
-  if (saved) {
-    try {
-      document.getElementById('fb-config-input').value =
-        'const firebaseConfig = ' + saved;
-      await window.connectFirebase();
-    } catch(e) {
-      console.warn('Auto-reconnect failed', e);
-      document.getElementById('fb-banner').style.display = 'flex';
-    }
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+
+    const cfg = {
+      apiKey: "AIzaSyAyZXY7HQ38XfC3OGDDbQ6tLaHict4x0Uc",
+      authDomain: "evidnet-orgchart.firebaseapp.com",
+      databaseURL: "https://evidnet-orgchart-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "evidnet-orgchart",
+      storageBucket: "evidnet-orgchart.firebasestorage.app",
+      messagingSenderId: "1047476778800",
+      appId: "1:1047476778800:web:6cbff3e99b12c66fe27af5"
+    };
+
+    setSyncStatus('saving', '연결 중...');
+    const app = initializeApp(cfg);
+    const database = getDatabase(app);
+    fbRef = ref(database, 'orgchart');
+    isFirebase = true;
+    window._fbSet = set;
+    window._fbRef = fbRef;
+
+    onValue(fbRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const incoming = JSON.stringify(data);
+        const current  = JSON.stringify(S);
+        if (incoming !== current) {
+          S = data;
+          nid = Math.max(...S.nodes.map(n => n.id)) + 1;
+          render();
+        }
+      } else {
+        pushToFirebase();
+      }
+      setSyncStatus('ok', '● 실시간 동기화 중');
+    }, (error) => {
+      setSyncStatus('err', '● 연결 오류');
+      console.error(error);
+    });
+
+    document.getElementById('fb-banner').style.display = 'none';
+
+  } catch(e) {
+    console.warn('Firebase auto-connect failed', e);
+    setSyncStatus('err', '● 연결 실패');
+    document.getElementById('fb-banner').style.display = 'none';
   }
+
   render();
   setTimeout(fitView, 200);
 });
