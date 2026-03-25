@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;height:100vh;width:100vw}
- 
+
 /* TOPBAR */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;
   background:var(--sur);border-bottom:1px solid var(--bdr);
@@ -42,7 +42,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 #sync-status.err{background:#fce8ec;color:#7a1f30}
 #sync-status.local{background:#f0efec;color:#3a3830}
 .tbr{display:flex;gap:6px;margin-left:auto;align-items:center;flex-shrink:0}
- 
+
 /* CANVAS */
 #wrap{position:fixed;top:52px;left:0;right:0;bottom:0;overflow:hidden;background:var(--bg)}
 #wrap::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -51,7 +51,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   background-position:var(--grid-ox,0px) var(--grid-oy,0px)}
 #canvas{position:absolute;transform-origin:0 0;width:6000px;height:4000px;z-index:1}
 #svg-layer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2}
- 
+
 /* NODES */
 .node{position:absolute;z-index:10;background:var(--sur);border:1px solid var(--bdr);
   border-radius:var(--r);box-shadow:var(--sh);min-width:155px;max-width:195px;
@@ -61,13 +61,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .node.cm{cursor:crosshair}
 .node.cm:hover{border:2px solid #2a6128;box-shadow:0 0 0 3px rgba(42,97,40,.15)}
 .node.cf{border:2px solid #2a6128;box-shadow:0 0 0 3px rgba(42,97,40,.2)}
- 
+
 .exec-box{padding:10px 14px 11px;border-radius:var(--r);cursor:grab}
 .exec-box:active{cursor:grabbing}
 .exec-top{display:flex;align-items:flex-start}
 .et{font-size:13px;font-weight:700;line-height:1.3}
 .es{font-size:10px;margin-top:2px;opacity:.65}
- 
+
 .node-head{padding:8px 10px 7px;border-radius:var(--r) var(--r) 0 0;
   display:flex;align-items:center;gap:5px}
 .nl{font-size:12px;font-weight:700;line-height:1.3}
@@ -89,7 +89,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   padding:4px 0;cursor:pointer;border-top:1px solid var(--bdr);
   border-radius:0 0 var(--r) var(--r);transition:color .12s,background .12s}
 .addm:hover{color:var(--acc);background:var(--acc2)}
- 
+
 /* colors */
 .c0 .node-head,.c0 .exec-box{background:#e8f0fb;color:#1a3d7a}
 .c1 .node-head,.c1 .exec-box{background:#e2f5ee;color:#0a4d36}
@@ -100,7 +100,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .c6 .node-head,.c6 .exec-box{background:#fdeee8;color:#7a3018}
 .c7 .node-head,.c7 .exec-box{background:#f0efec;color:#3a3830}
 .c8 .node-head,.c8 .exec-box{background:#1c1b18;color:#fff}
- 
+
 /* DIVISION NODE */
 .div-wrap{border-radius:var(--r);overflow:visible}
 .div-head{padding:8px 12px 7px;border-radius:var(--r) var(--r) 0 0;
@@ -119,13 +119,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .c6 .div-head{background:#f9d9cb;color:#6a220e}
 .c7 .div-head{background:#e3e0db;color:#2e2c26}
 .c8 .div-head{background:#333;color:#fff}
- 
+
 /* HINT */
 #hint{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);
   background:#2a6128;color:#fff;font-size:12px;font-weight:500;
   padding:8px 20px;border-radius:20px;z-index:400;box-shadow:var(--sh2);
   pointer-events:none;display:none;white-space:nowrap}
- 
+
 /* ZOOM */
 #zbar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:250;
   display:flex;gap:4px;align-items:center;background:var(--sur);
@@ -133,7 +133,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 #zbar button{font-size:14px;width:26px;height:26px;border:none;background:transparent;cursor:pointer;border-radius:6px;color:var(--txt)}
 #zbar button:hover{background:var(--bg)}
 #zlbl{font-size:11px;color:var(--mut);min-width:38px;text-align:center}
- 
+
 /* DASHBOARD */
 #dash{
   position:fixed;top:52px;left:0;bottom:0;z-index:200;
@@ -184,17 +184,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .dash-rank-bar{height:100%;background:var(--acc);border-radius:3px;transition:width .4s ease}
 .dash-rank-cnt{font-size:11px;font-weight:600;color:var(--mut);min-width:24px;text-align:right}
 .dash-no-data{font-size:11px;color:var(--lt);text-align:center;padding:16px 0}
- 
+
 /* shift canvas when dash open */
 #wrap.dash-open{left:260px}
 #mmap.dash-open{right:16px}
- 
+
 /* MINIMAP */
 #mmap{position:fixed;bottom:16px;right:16px;z-index:250;width:160px;height:110px;
   background:rgba(255,255,255,.92);border:1px solid var(--bdr);border-radius:8px;
   overflow:hidden;box-shadow:var(--sh)}
 #mmc{width:100%;height:100%}
- 
+
 /* MODAL */
 #mbg{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.38);
   display:none;align-items:center;justify-content:center}
@@ -211,7 +211,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .frow{display:flex;gap:8px}.frow .field{flex:1}
 .mbtns{display:flex;gap:8px;margin-top:18px}
 .mbtns .btn{flex:1;text-align:center;padding:8px}
- 
+
 /* CTX */
 #ctx{position:fixed;z-index:500;background:var(--sur);border:1px solid var(--bdr);
   border-radius:9px;box-shadow:var(--sh2);padding:6px;min-width:150px;display:none}
@@ -220,7 +220,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 .ci:hover{background:var(--bg)}
 .ci.red{color:#b02828}
 .cisep{height:1px;background:var(--bdr);margin:4px 0}
- 
+
 /* FIREBASE SETUP BANNER */
 #fb-banner{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.5);
   display:flex;align-items:center;justify-content:center}
@@ -238,7 +238,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 </style>
 </head>
 <body>
- 
+
 <!-- Firebase setup banner -->
 <div id="fb-banner">
   <div id="fb-box">
@@ -261,7 +261,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
     <div id="fb-skip-note">로컬 모드: 내 브라우저에서만 수정됩니다. 나중에 우상단 🔥 버튼으로 다시 연결 가능.</div>
   </div>
 </div>
- 
+
 <div id="topbar">
   <h1>에비드넷 조직도</h1>
   <div class="sep"></div>
@@ -279,7 +279,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
     <button class="btn" onclick="printOrg()">🖨 인쇄</button>
   </div>
 </div>
- 
+
 <div id="dash">
   <div style="padding:12px 12px 8px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
     <span style="font-size:13px;font-weight:700">📊 인원 현황</span>
@@ -288,13 +288,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   <div id="dash-inner"></div>
 </div>
 <button id="dash-toggle" onclick="toggleDash()" title="인원 현황">📊</button>
- 
+
 <div id="wrap">
   <div id="canvas"><svg id="svg-layer"></svg></div>
 </div>
- 
+
 <div id="hint">🔗 하위 노드를 클릭하세요 — ESC 취소</div>
- 
+
 <div id="zbar">
   <button onclick="doZoom(-0.1)">−</button>
   <span id="zlbl">100%</span>
@@ -302,7 +302,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   <button onclick="fitView()" style="font-size:11px;width:auto;padding:0 7px">맞춤</button>
 </div>
 <div id="mmap"><canvas id="mmc"></canvas></div>
- 
+
 <div id="mbg">
   <div id="mbox">
     <h3 id="mtitle"></h3>
@@ -311,7 +311,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
   </div>
 </div>
 <div id="ctx"></div>
- 
+
 <script type="module">
 /* ═══════════════════════════════════════
    FIREBASE DYNAMIC IMPORT
@@ -320,11 +320,11 @@ let db = null;
 let fbRef = null;
 let isFirebase = false;
 let saveTimeout = null;
- 
+
 window.connectFirebase = async function() {
   const raw = document.getElementById('fb-config-input').value.trim();
   if (!raw) return alert('설정값을 붙여넣어 주세요');
- 
+
   // parse firebaseConfig object from pasted text
   let cfg;
   try {
@@ -335,25 +335,25 @@ window.connectFirebase = async function() {
     alert('설정값 형식이 올바르지 않습니다.\nfirebaseConfig = { ... } 부분을 전체 복사해주세요.');
     return;
   }
- 
+
   if (!cfg.databaseURL) {
     alert('databaseURL이 없습니다.\nRealtime Database를 먼저 생성해주세요.');
     return;
   }
- 
+
   try {
     setSyncStatus('saving', '연결 중...');
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
     const { getDatabase, ref, set, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
- 
+
     const app = initializeApp(cfg);
     db = getDatabase(app);
     fbRef = ref(db, 'orgchart');
     isFirebase = true;
- 
+
     // save config to localStorage
     localStorage.setItem('fb_config', JSON.stringify(cfg));
- 
+
     // listen for realtime updates
     onValue(fbRef, (snapshot) => {
       const data = snapshot.val();
@@ -375,25 +375,25 @@ window.connectFirebase = async function() {
       setSyncStatus('err', '● 연결 오류');
       console.error(error);
     });
- 
+
     window._fbSet = set;
     window._fbRef = fbRef;
- 
+
     document.getElementById('fb-banner').style.display = 'none';
     setSyncStatus('ok', '● 실시간 동기화 중');
- 
+
   } catch(e) {
     setSyncStatus('err', '● 연결 실패');
     alert('Firebase 연결 실패: ' + e.message);
     console.error(e);
   }
 };
- 
+
 window.skipFirebase = function() {
   document.getElementById('fb-banner').style.display = 'none';
   setSyncStatus('local', '● 로컬 모드');
 };
- 
+
 // Auto-reconnect from localStorage
 window.addEventListener('load', async () => {
   const saved = localStorage.getItem('fb_config');
@@ -410,7 +410,7 @@ window.addEventListener('load', async () => {
   render();
   setTimeout(fitView, 200);
 });
- 
+
 function pushToFirebase() {
   if (!isFirebase || !window._fbSet || !window._fbRef) return;
   setSyncStatus('saving', '● 저장 중...');
@@ -421,17 +421,17 @@ function pushToFirebase() {
       .catch(e => { setSyncStatus('err', '● 저장 실패'); console.error(e); });
   }, 600); // debounce 600ms
 }
- 
+
 function setSyncStatus(cls, text) {
   const el = document.getElementById('sync-status');
   el.className = 'sync-status ' + cls;
   el.id = 'sync-status';
   el.textContent = text;
 }
- 
+
 // expose pushToFirebase globally so save() calls work
 window._push = pushToFirebase;
- 
+
 /* ═══════════════════════════════════════
    CONSTANTS
 ═══════════════════════════════════════ */
@@ -443,7 +443,7 @@ const NC = 9;
 const HC = ['#e8f0fb','#e2f5ee','#fdf0e0','#fce8ec','#eef4e2','#eeecfd','#fdeee8','#f0efec','#1c1b18'];
 const TC = ['#1a3d7a','#0a4d36','#6b3a10','#7a1f30','#2d5b0e','#3a2c8a','#7a3018','#3a3830','#fff'];
 const snap = v => Math.round(v / GRID) * GRID;
- 
+
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
@@ -481,21 +481,21 @@ let S = {
     [8,15],[8,16],[8,17],[8,18],[8,19],[8,20],[8,21],[8,22],[8,23],
   ]
 };
- 
+
 let nid = 60;
 let sc = 0.38, px = 0, py = 0;
 let connMode = false, connFrom = null;
 let dragN = null, dox = 0, doy = 0;
 let panning = false, psx = 0, psy = 0, ppx = 0, ppy = 0;
 let ctxT = null;
- 
+
 /* ═══════════════════════════════════════
    SAVE (debounced)
 ═══════════════════════════════════════ */
 function save() {
   window._push && window._push();
 }
- 
+
 /* ═══════════════════════════════════════
    RENDER
 ═══════════════════════════════════════ */
@@ -508,43 +508,43 @@ function render() {
   drawMinimap();
   window._dashAutoUpdate && window._dashAutoUpdate();
 }
- 
+
 function mkNode(n) {
   const d = document.createElement('div');
   d.className = `node c${n.color % NC}`;
   d.id = 'n' + n.id;
   d.style.left = n.x + 'px';
   d.style.top  = n.y + 'px';
- 
+
   if (n.type === 'division') {
     // ── DIVISION (본부) ──
     const head = document.createElement('div');
     head.className = 'div-head';
- 
+
     const htxt = document.createElement('div');
     htxt.style.flex = '1';
     const cnt = (n.members || []).length;
     htxt.innerHTML = `<div class="div-label">${n.label} <span class="mcnt">(${cnt}명)</span></div>${n.sub ? `<div class="div-sub">${n.sub}</div>` : ''}`;
- 
+
     const hacts = document.createElement('span');
     hacts.className = 'nacts';
- 
+
     const dEdit = document.createElement('button');
     dEdit.className = 'nab'; dEdit.title = '편집'; dEdit.textContent = '⚙';
     dEdit.addEventListener('mousedown', e => e.stopPropagation());
     dEdit.addEventListener('click', e => { e.stopPropagation(); openEdit(n.id); });
- 
+
     const dDel = document.createElement('button');
     dDel.className = 'nab'; dDel.title = '삭제'; dDel.textContent = '✕';
     dDel.style.color = '#b02828';
     dDel.addEventListener('mousedown', e => e.stopPropagation());
     dDel.addEventListener('click', e => { e.stopPropagation(); deleteNode(n.id); });
- 
+
     hacts.appendChild(dEdit); hacts.appendChild(dDel);
     head.appendChild(htxt); head.appendChild(hacts);
     d.appendChild(head);
     htxt.addEventListener('mousedown', e => startDrag(e, n));
- 
+
     // members
     const dmem = document.createElement('div');
     dmem.className = 'div-members node-body';
@@ -562,68 +562,68 @@ function mkNode(n) {
     dab.addEventListener('click', e => { e.stopPropagation(); openAddMember(n.id); });
     dmem.appendChild(dab);
     d.appendChild(dmem);
- 
+
   } else if (n.type === 'exec') {
     const box = document.createElement('div');
     box.className = 'exec-box';
- 
+
     const inner = document.createElement('div');
     inner.className = 'exec-top';
- 
+
     const txt = document.createElement('div');
     txt.style.flex = '1';
     txt.innerHTML = `<div class="et">${n.label}</div>${n.sub ? `<div class="es">${n.sub}</div>` : ''}`;
- 
+
     const acts = document.createElement('span');
     acts.className = 'nacts';
     acts.style.cssText = 'flex-shrink:0;margin-left:6px';
- 
+
     const bEdit = document.createElement('button');
     bEdit.className = 'nab'; bEdit.title = '편집'; bEdit.textContent = '⚙';
     bEdit.addEventListener('mousedown', e => e.stopPropagation());
     bEdit.addEventListener('click', e => { e.stopPropagation(); openEdit(n.id); });
- 
+
     const bDel = document.createElement('button');
     bDel.className = 'nab'; bDel.title = '삭제'; bDel.textContent = '✕';
     bDel.style.color = '#b02828';
     bDel.addEventListener('mousedown', e => e.stopPropagation());
     bDel.addEventListener('click', e => { e.stopPropagation(); deleteNode(n.id); });
- 
+
     acts.appendChild(bEdit); acts.appendChild(bDel);
     inner.appendChild(txt); inner.appendChild(acts);
     box.appendChild(inner);
     d.appendChild(box);
     txt.addEventListener('mousedown', e => startDrag(e, n));
- 
+
   } else {
     // ── TEAM ──
     const head = document.createElement('div');
     head.className = 'node-head';
- 
+
     const htxt = document.createElement('div');
     htxt.style.flex = '1';
     const cnt = (n.members || []).length;
     htxt.innerHTML = `<div class="nl">${n.label} <span class="mcnt">(${cnt}명)</span></div>${n.sub ? `<div class="ns">${n.sub}</div>` : ''}`;
- 
+
     const hacts = document.createElement('span');
     hacts.className = 'nacts';
- 
+
     const hEdit = document.createElement('button');
     hEdit.className = 'nab'; hEdit.title = '편집'; hEdit.textContent = '⚙';
     hEdit.addEventListener('mousedown', e => e.stopPropagation());
     hEdit.addEventListener('click', e => { e.stopPropagation(); openEdit(n.id); });
- 
+
     const hDel = document.createElement('button');
     hDel.className = 'nab'; hDel.title = '삭제'; hDel.textContent = '✕';
     hDel.style.color = '#b02828';
     hDel.addEventListener('mousedown', e => e.stopPropagation());
     hDel.addEventListener('click', e => { e.stopPropagation(); deleteNode(n.id); });
- 
+
     hacts.appendChild(hEdit); hacts.appendChild(hDel);
     head.appendChild(htxt); head.appendChild(hacts);
     d.appendChild(head);
     htxt.addEventListener('mousedown', e => startDrag(e, n));
- 
+
     const body = document.createElement('div');
     body.className = 'node-body';
     (n.members || []).forEach((m, i) => {
@@ -641,13 +641,13 @@ function mkNode(n) {
     body.appendChild(ab);
     d.appendChild(body);
   }
- 
+
   d.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e, {t:'node', nid:n.id}); });
   d.addEventListener('click', e => { if (connMode) handleConn(n.id, e); });
   if (connMode) d.classList.add('cm');
   return d;
 }
- 
+
 /* ═══════════════════════════════════════
    SMART CONNECTORS
 ═══════════════════════════════════════ */
@@ -657,7 +657,7 @@ function drawEdges() {
     <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M1,1 L7,4 L1,7" fill="none" stroke="#b0ab9e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </marker></defs>`;
- 
+
   S.edges.forEach(([a, b]) => {
     const na = S.nodes.find(n => n.id === a);
     const nb = S.nodes.find(n => n.id === b);
@@ -665,12 +665,12 @@ function drawEdges() {
     const ea = document.getElementById('n' + a);
     const eb = document.getElementById('n' + b);
     if (!ea || !eb) return;
- 
+
     const aw = ea.offsetWidth  || 160, ah = ea.offsetHeight || 50;
     const bw = eb.offsetWidth  || 160;
     const ax = na.x + aw / 2, ay = na.y + ah;
     const bx = nb.x + bw / 2, by = nb.y;
- 
+
     // 수직 1자: 두 노드의 left x가 같거나 중심 X가 30px 이내
     const sameCol = (na.x === nb.x) || Math.abs(ax - bx) < 30;
     let d;
@@ -680,7 +680,7 @@ function drawEdges() {
       const my = ay + Math.round((by - ay) / 2);
       d = `M ${ax} ${ay} L ${ax} ${my} L ${bx} ${my} L ${bx} ${by}`;
     }
- 
+
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', d);
     path.setAttribute('fill', 'none');
@@ -692,7 +692,7 @@ function drawEdges() {
     path.style.cursor = 'pointer';
     path.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(e, {t:'edge', a, b}); });
     svg.appendChild(path);
- 
+
     // wide invisible hit area for easier clicking
     const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     hit.setAttribute('d', d);
@@ -708,7 +708,7 @@ function drawEdges() {
     svg.appendChild(hit);
   });
 }
- 
+
 /* ═══════════════════════════════════════
    DRAG
 ═══════════════════════════════════════ */
@@ -719,7 +719,7 @@ function startDrag(e, n) {
   dox = e.clientX / sc - px / sc - n.x;
   doy = e.clientY / sc - py / sc - n.y;
 }
- 
+
 window.addEventListener('mousemove', e => {
   if (dragN) {
     dragN.x = Math.max(0, snap(e.clientX / sc - px / sc - dox));
@@ -739,7 +739,7 @@ window.addEventListener('mouseup', () => {
   if (dragN) { save(); dragN = null; }
   panning = false;
 });
- 
+
 /* ═══════════════════════════════════════
    PAN + ZOOM
 ═══════════════════════════════════════ */
@@ -762,7 +762,7 @@ wrap.addEventListener('wheel', e => {
   py = my - (my - py) * (sc / old);
   applyT(); drawMinimap();
 }, { passive: false });
- 
+
 function applyT() {
   document.getElementById('canvas').style.transform = `translate(${px}px,${py}px) scale(${sc})`;
   document.getElementById('zlbl').textContent = Math.round(sc * 100) + '%';
@@ -790,7 +790,7 @@ function fitView() {
   py = -minY * sc + 20;
   applyT(); drawMinimap();
 }
- 
+
 /* ═══════════════════════════════════════
    CONNECT MODE
 ═══════════════════════════════════════ */
@@ -820,7 +820,7 @@ function handleConn(id, e) {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { if (connMode) toggleConn(); closeModal(); document.getElementById('ctx').classList.remove('open'); }
 });
- 
+
 /* ═══════════════════════════════════════
    DELETE
 ═══════════════════════════════════════ */
@@ -846,7 +846,7 @@ window._doDelM = function(nid, idx) {
   S.nodes.find(n => n.id === nid)?.members.splice(idx, 1);
   closeModal(); render(); save();
 };
- 
+
 /* ═══════════════════════════════════════
    CONTEXT MENU
 ═══════════════════════════════════════ */
@@ -885,7 +885,7 @@ function ctxAct(a) {
   }
 }
 document.addEventListener('click', () => document.getElementById('ctx').classList.remove('open'));
- 
+
 /* ═══════════════════════════════════════
    MODAL
 ═══════════════════════════════════════ */
@@ -899,7 +899,7 @@ function openModal(title, body, btns) {
 }
 function closeModal() { document.getElementById('mbg').classList.remove('open'); }
 document.getElementById('mbg').addEventListener('click', e => { if (e.target === document.getElementById('mbg')) closeModal(); });
- 
+
 /* ═══════════════════════════════════════
    NODE CRUD
 ═══════════════════════════════════════ */
@@ -926,7 +926,7 @@ window.doAdd = function(type) {
     x:snap(300+Math.random()*400), y:snap(200+Math.random()*200), members:[] });
   closeModal(); render(); save();
 };
- 
+
 function openEdit(id) {
   const n = S.nodes.find(x => x.id === id);
   openModal('편집', `
@@ -943,7 +943,7 @@ window.saveEdit = function(id) {
   n.color = +document.getElementById('mc').value;
   closeModal(); render(); save();
 };
- 
+
 /* ═══════════════════════════════════════
    MEMBER CRUD
 ═══════════════════════════════════════ */
@@ -966,7 +966,7 @@ window.doAddM = function(id) {
   n.members.push({ name, rank:document.getElementById('mr').value, pos:document.getElementById('mp').value });
   closeModal(); render(); save();
 };
- 
+
 function openEditMember(nid, idx) {
   const m = S.nodes.find(n => n.id === nid)?.members[idx];
   openModal('직원 편집', `
@@ -986,7 +986,7 @@ window.saveM = function(nid, idx) {
   n.members[idx].pos  = document.getElementById('mp').value;
   closeModal(); render(); save();
 };
- 
+
 /* ═══════════════════════════════════════
    AUTO LAYOUT
 ═══════════════════════════════════════ */
@@ -1011,7 +1011,7 @@ function autoLayout() {
   });
   render(); save(); setTimeout(fitView, 150);
 }
- 
+
 /* ═══════════════════════════════════════
    STATS
 ═══════════════════════════════════════ */
@@ -1026,7 +1026,7 @@ function updateStats() {
     `${divs?`<div class="chip">본부 <b>${divs}</b></div>`:''}<div class="chip">팀 <b>${teams}</b></div><div class="chip">총인원 <b>${total}명</b></div>` +
     top.map(([r,c]) => `<div class="chip">${r} <b>${c}</b></div>`).join('');
 }
- 
+
 /* ═══════════════════════════════════════
    MINIMAP
 ═══════════════════════════════════════ */
@@ -1053,7 +1053,7 @@ function drawMinimap() {
   ctx.strokeStyle='#1b4380'; ctx.lineWidth=1;
   ctx.strokeRect((-px/sc-mnX)*s+4,(-py/sc-mnY)*s+4,(r.width/sc)*s,(r.height/sc)*s);
 }
- 
+
 /* ═══════════════════════════════════════
    PRINT
 ═══════════════════════════════════════ */
@@ -1093,7 +1093,7 @@ function printOrg() {
     <script>window.onload=()=>setTimeout(()=>window.print(),600)<\/script></body></html>`);
   win.document.close();
 }
- 
+
 /* ═══════════════════════════════════════
    EXPOSE GLOBALS (for onclick= in modal)
 ═══════════════════════════════════════ */
@@ -1101,7 +1101,7 @@ function printOrg() {
    DASHBOARD
 ═══════════════════════════════════════ */
 const DOT_COLORS = ['#4e8fde','#2eab7a','#e8951a','#d95078','#6ab042','#7b68d4','#d9733a','#8a8680','#444'];
- 
+
 function toggleDash() {
   const dash = document.getElementById('dash');
   const wrap = document.getElementById('wrap');
@@ -1113,14 +1113,14 @@ function toggleDash() {
   tog.classList.toggle('shifted', open);
   if (open) renderDash();
 }
- 
+
 function renderDash() {
   const el = document.getElementById('dash-inner');
   if (!el) return;
- 
+
   const nodes = S.nodes;
   const edges = S.edges;
- 
+
   // helper: get all descendant node ids (BFS)
   function descendants(id) {
     const result = [], q = [id];
@@ -1130,10 +1130,10 @@ function renderDash() {
     }
     return result;
   }
- 
+
   // total headcount
   const total = nodes.reduce((s, n) => s + (n.members?.length || 0), 0);
- 
+
   // divisions
   const divNodes = nodes.filter(n => n.type === 'division');
   // teams
@@ -1141,7 +1141,7 @@ function renderDash() {
   // unattached teams (not under any division)
   const divIds = new Set(divNodes.map(n => n.id));
   const underDiv = new Set(edges.filter(([a]) => divIds.has(a)).map(([, b]) => b));
- 
+
   // rank counts
   const rankCount = {};
   nodes.forEach(n => (n.members || []).forEach(m => {
@@ -1149,7 +1149,7 @@ function renderDash() {
   }));
   const rankSorted = Object.entries(rankCount).sort((a, b) => b[1] - a[1]);
   const maxRank = rankSorted[0]?.[1] || 1;
- 
+
   // max total for bar width
   const maxDiv = Math.max(...divNodes.map(d => {
     const desc = descendants(d.id);
@@ -1158,9 +1158,9 @@ function renderDash() {
       return s + (nd?.members?.length || 0);
     }, 0);
   }), 1);
- 
+
   let html = '';
- 
+
   // ── Total card ──
   html += `<div class="dash-total">
     <div><div class="big">${total}</div><div class="lbl">총 인원</div></div>
@@ -1168,7 +1168,7 @@ function renderDash() {
       본부 ${divNodes.length}개<br>팀 ${teamNodes.length}개
     </div>
   </div>`;
- 
+
   // ── Divisions ──
   if (divNodes.length) {
     html += `<div class="dash-section"><div class="dash-section-title">본부별 인원</div>`;
@@ -1180,7 +1180,7 @@ function renderDash() {
       const total2 = divMem + teamMem;
       const pct = Math.round(total2 / maxDiv * 100);
       const dot = DOT_COLORS[d.color % DOT_COLORS.length];
- 
+
       html += `<div class="dash-div-card">
         <div class="dash-div-head">
           <span class="dash-div-dot" style="background:${dot}"></span>
@@ -1188,7 +1188,7 @@ function renderDash() {
           <span class="dash-div-cnt">${total2}명</span>
         </div>
         <div class="dash-div-bar"><div class="dash-div-bar-fill" style="width:${pct}%;background:${dot}"></div></div>`;
- 
+
       if (divMem > 0) {
         html += `<div class="dash-team-list">
           <div class="dash-team-row">
@@ -1211,7 +1211,7 @@ function renderDash() {
     });
     html += `</div>`;
   }
- 
+
   // ── Standalone teams (not under any division) ──
   const standaloneTeams = teamNodes.filter(t => !underDiv.has(t.id));
   if (standaloneTeams.length) {
@@ -1231,7 +1231,7 @@ function renderDash() {
     });
     html += `</div>`;
   }
- 
+
   // ── Rank breakdown ──
   if (rankSorted.length) {
     html += `<div class="dash-section"><div class="dash-section-title">직급별 인원</div>`;
@@ -1245,22 +1245,22 @@ function renderDash() {
     });
     html += `</div>`;
   }
- 
+
   if (!total) html += `<div class="dash-no-data">직원을 추가하면<br>여기서 현황을 볼 수 있어요</div>`;
- 
+
   el.innerHTML = html;
 }
- 
+
 // re-render dash on every render() call
 const _origRender = render;
 window._dashAutoUpdate = function() {
   const dash = document.getElementById('dash');
   if (dash?.classList.contains('open')) renderDash();
 };
- 
+
 window.toggleDash = toggleDash;
 window.renderDash = renderDash;
- 
+
 window.closeModal   = closeModal;
 window.openEdit     = openEdit;
 window.addNode      = addNode;
@@ -1278,4 +1278,3 @@ window.addEventListener('resize', drawMinimap);
 </script>
 </body>
 </html>
- 
